@@ -18,7 +18,6 @@
 #include <exception>
 #include <regex>
 #include <numeric>
-#include <format>
 #include <sstream>
 
 // STL Containers

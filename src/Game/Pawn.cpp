@@ -7,32 +7,32 @@ namespace trc::game {
 
     }
 
-    bool Pawn::IsInRange(int x, int y)
+    bool Pawn::IsInRange(std::pair<int, int> pos)
     {
 		return true;
     }
 
-    bool Knight::IsInRange(int x, int y)
+    bool Knight::IsInRange(std::pair<int, int> pos)
     {
 		return true;
     }
 
-    bool Bishop::IsInRange(int x, int y)
+    bool Bishop::IsInRange(std::pair<int, int> pos)
     {
 		return true;
     }
 
-    bool Rook::IsInRange(int x, int y)
+    bool Rook::IsInRange(std::pair<int, int> pos)
     {
         return true;
     }
 
-    bool King::IsInRange(int x, int y)
+    bool King::IsInRange(std::pair<int, int> pos)
     {
         return true;
     }
 
-    bool Queen::IsInRange(int x, int y)
+    bool Queen::IsInRange(std::pair<int, int> pos)
     {
         return true;
     }

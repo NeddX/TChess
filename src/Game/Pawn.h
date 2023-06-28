@@ -27,16 +27,14 @@ namespace trc::game {
 		Pawn(int x, int y, chtype colour);
 
     public:
-        inline int GetPosX() const { return m_PosX; }
-        inline int GetPosY() const { return m_PosY; }
+        inline std::pair<int, int> GetPos() const { return { m_PosX, m_PosY }; }
         inline chtype GetColour() const { return m_Colour; }
         inline chtype GetSymbol() const { return m_Symbol; }
         inline void SetColour(char newColour) { m_Colour = (newColour == 'W' || newColour == 'B') ? newColour : m_Colour; }
-        inline void SetPosX(int newX) { m_PosX = newX; }
-        inline void SetPosY(int newY) { m_PosY = newY; }
+        inline void SetPos(std::pair<int, int> newPos) { m_PosX = newPos.first; m_PosY = newPos.second; }
 
     public:
-        virtual bool IsInRange(int x, int y);
+        virtual bool IsInRange(std::pair<int, int> pos);
     };
 
     class Knight : public Pawn
@@ -45,7 +43,7 @@ namespace trc::game {
 		chtype m_Symbol = 'K';
 
     public:
-        bool IsInRange(int x, int y) override;
+        bool IsInRange(std::pair<int, int> pos) override;
     };
 
     class Bishop : public Pawn
@@ -54,7 +52,7 @@ namespace trc::game {
 		chtype m_Symbol = 'B';
 
     public:
-        bool IsInRange(int x, int y) override;
+        bool IsInRange(std::pair<int, int> pos) override;
     };
 
     class Rook : public Pawn
@@ -63,7 +61,7 @@ namespace trc::game {
 		chtype m_Symbol = 'R';
 
     public:
-        bool IsInRange(int x, int y) override;
+        bool IsInRange(std::pair<int, int> pos) override;
     };
 
     class King : public Pawn
@@ -72,7 +70,7 @@ namespace trc::game {
 		chtype m_Symbol = 'K';
 
     public:
-        bool IsInRange(int x, int y) override;
+        bool IsInRange(std::pair<int, int> pos) override;
     };
 
     class Queen : public Pawn
@@ -81,7 +79,7 @@ namespace trc::game {
         chtype m_Symbol = 'Q';
 
     public:
-        bool IsInRange(int x, int y) override;
+        bool IsInRange(std::pair<int, int> pos) override;
     };
 } // namespace trc::game
 
