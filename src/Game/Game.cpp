@@ -25,7 +25,8 @@ namespace trc::game {
 
     void Game::Start()
     {
-        auto& pawn = m_Board->AddPawn<Pawn>(0, 0, 'B');
+        m_Turn = 'B'; // FIXME: REMEMBER TO REMOVE!
+        m_Board->AddPawn<Queen>(3, 0, 'B');
 
         char c = 0;
         int x = 1, y = 1;
@@ -182,11 +183,11 @@ default_case:
                     std::vector<std::string> tokens = utils::string::Split(cmd, ' ');
                     printca("Moving from: %s to %s\n", tokens[0].c_str(), tokens[1].c_str());
 
-                    auto [pos_x, pos_y] 	= std::pair<int, int> { tokens[0][0] - 'a', std::stoi(tokens[0].substr(1)) };
-                    auto [npos_x, npos_y] 	= std::pair<int, int> { tokens[1][0] - 'a', std::stoi(tokens[1].substr(1)) };
+                    auto [pos_x, pos_y] 	= std::pair<int, int> { tokens[0][0] - 'a', m_Board->GetRowsAndCols().first - std::stoi(tokens[0].substr(1)) };
+                    auto [npos_x, npos_y] 	= std::pair<int, int> { tokens[1][0] - 'a', m_Board->GetRowsAndCols().first - std::stoi(tokens[1].substr(1)) };
 
                     printca("Moving pawn at (%d, %d) to (%d, %d)", pos_x, pos_y, npos_x, npos_y);
-
+                    //return;
                     if (auto dim = m_Board->GetDimensions();
                         (pos_x > dim.first || pos_y > dim.second) ||
                         (pos_x < 0 || pos_y < 0) ||
@@ -196,20 +197,14 @@ default_case:
                         throw std::exception();
                     }
 
-                    Pawn* pawn = nullptr;
-                    pawn = m_Board->GetPawnAt({ pos_x, pos_y });
-                    if (pawn)
+                    Pawn* pawn = m_Board->GetPawnAt({ pos_x, pos_y });
+                    Pawn* target_pawn = m_Board->GetPawnAt({ npos_x, npos_y });
+                    if (pawn && m_Turn == pawn->GetColour())
                     {
-                        if (pawn->IsInRange({ npos_x, npos_y }))
+                        if (m_Board->MovePawn(*pawn, { npos_x, npos_y }))
                         {
-                            if (m_Board->MovePawn(*pawn, { npos_x, npos_y }))
-                            {
-                                m_Turn = (m_Turn == 'w') ? 'b' : 'w';
-                            }
-                            else
-                            {
-                                printc("Illegal movement attempt.");
-                            }
+                            // FIXME: holy shit i keep fucking forgeting that the turn changes
+                            //m_Turn = (m_Turn == 'W') ? 'B' : 'W';
                         }
                         else
                         {

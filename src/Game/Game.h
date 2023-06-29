@@ -27,7 +27,7 @@ namespace trc::game {
         bool m_CommandMode = false;
         CommandType m_Command = CommandType::NullCmd;
         std::pair<int, int> m_CursorPos = { 0, 0 };
-        char m_Turn = 'w';
+        chtype m_Turn = 'W';
         float m_Secs = 0;
 
     public:

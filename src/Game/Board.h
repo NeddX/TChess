@@ -37,7 +37,7 @@ namespace trc::game {
             auto [x, y] = ptr->GetPos();
             m_Map[todim(x, y)] = ptr.get();
             m_Pawns.push_back(std::move(ptr));
-            return *m_Pawns.back();
+            return *(T*)(m_Pawns.back().get());
         }
         template<typename T, typename = typename std::enable_if<std::is_base_of<Pawn, T>::value>::type>
         inline void RemovePawn(T& pawn)
@@ -66,13 +66,30 @@ namespace trc::game {
 
             auto [prev_x, prev_y] = pawn.GetPos();
 
-            if (pawn.IsInRange(newPos))
+            Pawn* potential_target = m_Map[todim(newPos.first, newPos.second)];
+            if (potential_target && potential_target->GetColour() != pawn.GetColour())
             {
-                m_Map[todim(prev_x, prev_y)] = nullptr;
-                m_Map[todim(newPos.first, newPos.second)] = &pawn;
+                if (pawn.IsInRange(newPos, true))
+                {
+                    pawn.SetMoveCount(pawn.GetMoveCount() + 1); // Dodgy....
+                    m_Map[todim(prev_x, prev_y)] = nullptr;
+                    m_Map[todim(newPos.first, newPos.second)] = &pawn;
 
-                pawn.SetPos(newPos);
-                return true;
+                    pawn.SetPos(newPos);
+                    return true;
+                }
+            }
+            else if (!potential_target)
+            {
+                if (pawn.IsInRange(newPos, false))
+                {
+                    pawn.SetMoveCount(pawn.GetMoveCount() + 1); // Dodgy....
+                    m_Map[todim(prev_x, prev_y)] = nullptr;
+                    m_Map[todim(newPos.first, newPos.second)] = &pawn;
+
+                    pawn.SetPos(newPos);
+                    return true;
+                }
             }
             return false;
         }
