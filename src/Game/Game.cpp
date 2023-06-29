@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Pawn.h"
 #include "../Utils/xstdf.h"
+#include <chrono>
 
 #define KEY_ESCAPE 27
 
@@ -10,9 +11,10 @@
 namespace trc::game {
     Game::Game()
     {
-        m_Board = std::make_unique<Board>(8, 8, 3, 3);
+        m_Board = std::make_unique<Board>(8, 8, 4, 4);
         m_Running = true;
 
+        curs_set(0); // No Cursor for now.
         getmaxyx(stdscr, m_MaxRows, m_MaxCols);
     }
 
@@ -30,10 +32,11 @@ namespace trc::game {
         float delta_time = -1.0f;
         while (m_Running)
         {
+            HandleUI();
             HandleInput();
             m_Board->Update();
 
-            std::printf("\033]0;TermChess FPS: %d Delta: %f Frames: %d\007", m_Fps, delta_time, m_FrameCount);
+            //std::printf("\033]0;TermChess FPS: %d Delta: %f Frames: %d\007", m_Fps, delta_time, m_FrameCount);
             m_Tp1 = std::chrono::system_clock::now();
             delta_time = std::chrono::duration<float>(m_Tp1 - m_Tp2).count();
             m_Tp2 = m_Tp1;
@@ -41,6 +44,8 @@ namespace trc::game {
             if (m_FrameCap > 0) std::this_thread::sleep_for(
                 std::chrono::milliseconds((uint32_t)(1.0f / m_FrameCap * 1000)));
             m_FrameCount++;
+            move(m_CursorPos.first, m_CursorPos.second);
+            m_Secs += delta_time;
         }
     }
 
@@ -63,7 +68,9 @@ namespace trc::game {
                     m_CommandMode = true;
                 }
                 else
+                {
                     goto default_case;
+                }
                 break;
             }
             case 'm':
@@ -75,7 +82,9 @@ namespace trc::game {
                     m_Command = CommandType::Move;
                 }
                 else
+                {
                     goto default_case;
+                }
                 break;
             }
             case 'h':
@@ -114,8 +123,8 @@ namespace trc::game {
             {
                 if (m_CommandMode)
                 {
-                    cmd.pop_back();
-					printca("%s %s", cmd_prefix.c_str(), cmd.c_str());
+                    if (!cmd.empty()) cmd.pop_back();
+                    printca("%s %s", cmd_prefix.c_str(), cmd.c_str());
                 }
                 else
                 {
@@ -136,6 +145,7 @@ namespace trc::game {
 default_case:
                 if (m_CommandMode)
                 {
+                    m_CursorPos = { m_MaxRows - 1, cmd.size() };
                     cmd.append(1, (char)c);
                     printca("%s %s", cmd_prefix.c_str(), cmd.c_str());
                 }
@@ -146,6 +156,16 @@ default_case:
                 break;
             }
         }
+    }
+
+    void Game::HandleUI()
+    {
+        mvprintw(
+            m_Board->GetDimensions().second,
+            0,
+            "%s\nSeconds passed: %f\tPawns eaten by Black: \tPawns eaten by White: \n",
+            m_Secs,
+            (m_Turn == 'b') ? "Black's turn." : "White's turn.");
     }
 
     void Game::ExecuteCommand(std::string cmd)
@@ -182,7 +202,14 @@ default_case:
                     {
                         if (pawn->IsInRange({ npos_x, npos_y }))
                         {
-                            m_Board->MovePawn(*pawn, { npos_x, npos_y });
+                            if (m_Board->MovePawn(*pawn, { npos_x, npos_y }))
+                            {
+                                m_Turn = (m_Turn == 'w') ? 'b' : 'w';
+                            }
+                            else
+                            {
+                                printc("Illegal movement attempt.");
+                            }
                         }
                         else
                         {

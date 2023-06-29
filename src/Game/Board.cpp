@@ -15,8 +15,8 @@ namespace trc::game {
     void Board::Update()
     {
         // Draw the Board
-        const int offset_x = 4;
-        const int offset_y = 2;
+        const int offset_x = 0;
+        const int offset_y = 0;
         const int min_x = 0;
         const int min_y = 0;
         const int max_x = m_Width;
@@ -26,17 +26,13 @@ namespace trc::game {
             for (int x = min_x; x < max_x; ++x)
             {
                 if (y == min_y || y == max_y - 1)
-                    m_Scene->RenderAt('#', x + offset_x, y + offset_y);
-            	else if (x == min_x || x == max_x - 1)
-                    m_Scene->RenderAt('#', x + offset_x, y + offset_y);
-                /*if (y == min_y || y == max_y - 1)
-                    m_Scene->RenderAt('#', x + offset, y + offset);
+                    m_Scene->RenderAt('#', x, y);
                 else if (y % m_CellSizeY == 0)
-                    m_Scene->RenderAt('#', x + offset, y + offset);
+                    m_Scene->RenderAt('#', x, y);
                 else if (x % m_CellSizeX == 0)
-                    m_Scene->RenderAt('#', x + offset, y + offset);
+                    m_Scene->RenderAt('#', x, y);
                 else if (x == min_y || x == max_x - 1)
-                    m_Scene->RenderAt('#', x + offset, y + offset);*/
+                    m_Scene->RenderAt('#', x, y);
             }
         }
 

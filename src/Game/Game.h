@@ -24,8 +24,11 @@ namespace trc::game {
         int m_Fps = 0;
         uint32_t m_FrameCount = 0;
         uint32_t m_FrameCap = 240;
-        bool m_CommandMode;
-        CommandType m_Command;
+        bool m_CommandMode = false;
+        CommandType m_Command = CommandType::NullCmd;
+        std::pair<int, int> m_CursorPos = { 0, 0 };
+        char m_Turn = 'w';
+        float m_Secs = 0;
 
     public:
         Game();
@@ -34,6 +37,7 @@ namespace trc::game {
     public:
         void Start();
         void HandleInput();
+        void HandleUI();
         void ExecuteCommand(std::string cmd);
     };
 } // namespace trc::game

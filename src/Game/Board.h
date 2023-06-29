@@ -26,7 +26,9 @@ namespace trc::game {
         Board(int rows, int cols, int cellSizeX, int cellSizeY);
 
     public:
-        inline std::pair<int, int> GetDimensions() const { return std::make_pair(m_Rows, m_Cols); }
+        inline std::pair<int, int> GetDimensions() const { return { m_Width, m_Height }; }
+        inline std::pair<int, int> GetRowsAndCols() const { return { m_Rows, m_Cols }; }
+        inline std::pair<int, int> GetCellSize() const { return { m_CellSizeX, m_CellSizeY }; }
         inline Pawn* GetPawnAt(std::pair<int, int> pos) const { return m_Map[todim(pos.first, pos.second)]; }
         template<typename T, typename... TArgs, typename = typename std::enable_if<std::is_base_of<Pawn, T>::value>::type>
         inline T& AddPawn(TArgs&&... args)
