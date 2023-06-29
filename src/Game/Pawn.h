@@ -43,10 +43,12 @@ namespace trc::game {
         virtual bool IsInRange(std::pair<int, int> pos, bool eatable = false);
     };
 
+    // Should've used a more data oriented approach instead of this inheritance fiesta
+    // but I'm lazy so whatever.
     class Knight : public Pawn
     {
-    protected:
-        chtype m_Symbol = 'K';
+    public:
+        Knight(int x, int y, chtype colour) : Pawn(x, y, colour, 'N') { };
 
     public:
         bool IsInRange(std::pair<int, int> pos, bool eatable = false) override;

@@ -81,7 +81,9 @@ namespace trc::game {
 
     bool King::IsInRange(std::pair<int, int> pos, bool eatable)
     {
-        return true;
+        if (std::abs(pos.first - m_PosX) <= 1 && std::abs(pos.second - m_PosY) <= 1)
+            return true;
+        return false;
     }
 
     bool Queen::IsInRange(std::pair<int, int> pos, bool eatable)

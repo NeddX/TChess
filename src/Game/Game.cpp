@@ -26,7 +26,34 @@ namespace trc::game {
     void Game::Start()
     {
         m_Turn = 'B'; // FIXME: REMEMBER TO REMOVE!
-        m_Board->AddPawn<Queen>(3, 0, 'B');
+        m_Board->AddPawn<King>(3, 0, 'B');
+
+        // Pawns
+        for (int y = 0; y <= 1; ++y)
+        {
+            for (int x = 0; x < 8; ++x)
+            {
+                m_Board->AddPawn<Pawn>(x, y * 5 + 1, (y == 0) ? 'B' : 'W');
+            }
+        }
+
+        // Rooks
+        for (int y = 0; y <= 1; ++y)
+        {
+            for (int x = 0; x <= 1; ++x)
+            {
+                m_Board->AddPawn<Rook>(x * 7, y * 7, (y == 0) ? 'B' : 'W');
+            }
+        }
+
+        for (int y = 0; y <= 1; ++y)
+        {
+            for (int x = 0; x <= 1 ; ++x)
+            {
+                m_Board->AddPawn<Knight>();
+            }
+        }
+
 
         char c = 0;
         int x = 1, y = 1;
