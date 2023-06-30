@@ -85,8 +85,6 @@ namespace trc::game {
             m_Board->AddPawn<King>(4, y * 7, (y == 0) ? 'B' : 'W');
         }
 
-        char c = 0;
-        int x = 1, y = 1;
         float delta_time = -1.0f;
         while (m_Running)
         {
@@ -95,7 +93,6 @@ namespace trc::game {
                 HandleUI();
                 HandleInput();
                 m_Board->Update();
-                //CheckForCheckmate();
             }
             else
             {
@@ -114,7 +111,6 @@ namespace trc::game {
                 }
             }
 
-            //std::printf("\033]0;TermChess FPS: %d Delta: %f Frames: %d\007", m_Fps, delta_time, m_FrameCount);
             m_Tp1 = std::chrono::system_clock::now();
             delta_time = std::chrono::duration<float>(m_Tp1 - m_Tp2).count();
             m_Tp2 = m_Tp1;
@@ -122,8 +118,6 @@ namespace trc::game {
             if (m_FrameCap > 0) std::this_thread::sleep_for(
                 std::chrono::milliseconds((uint32_t)(1.0f / m_FrameCap * 1000)));
             m_FrameCount++;
-            move(m_CursorPos.first, m_CursorPos.second);
-            m_Secs += delta_time;
         }
     }
 
