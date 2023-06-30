@@ -1,0 +1,9 @@
+Important:
+    Implement check.
+    Implement checkmate.
+
+Polishing and stuff:
+    Make the board prettier.
+    Implement timing.
+    Menu system.
+    README
