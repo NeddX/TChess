@@ -424,7 +424,7 @@ namespace trc::game {
     {
         std::vector<std::pair<int, int>> ranges;
 
-        // Same story.
+        // You get the gist.
         for (int i = 0; i < 8; ++i)
         {
             std::pair<int, int> r = { m_PosX + i, m_PosY + i };

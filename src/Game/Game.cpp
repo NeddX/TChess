@@ -151,6 +151,9 @@ namespace trc::game {
                 }
                 break;
             }
+            case 'q':
+                endwin();
+                std::exit(EXIT_SUCCESS);
             case 'm':
             {
                 if (m_CommandMode && m_Command == CommandType::NullCmd)
