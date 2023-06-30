@@ -26,15 +26,11 @@ namespace trc::game {
         uint32_t m_FrameCap = 240;
         bool m_CommandMode = false;
         CommandType m_Command = CommandType::NullCmd;
-        std::pair<int, int> m_CursorPos = { 0, 0 };
         chtype m_Turn = 'W';
-        float m_Secs = 0;
         int m_PawnsEatenByW = 0;
         int m_PawnsEatenByB = 0;
         bool m_IsWUnderChess = false;
         bool m_IsBUnderChess = false;
-        bool m_IsWUnderCheckmate = false;
-        bool m_IsBUnderCheckmate = false;
         bool m_GameOver = false;
         std::vector<std::pair<int, int>> m_AvailablePositionsForKing;
 
