@@ -45,6 +45,12 @@ namespace trc::game {
                 else if (x % m_CellSizeX == 0 && y == offset_y / 2 && x / m_CellSizeX <= 7)
                     m_Scene->RenderAt('A' + x / m_CellSizeX, x + offset_x + m_CellSizeX / 2, y);
 
+                 if ((y == min_y || y == max_y - 1) ||
+                     (y % m_CellSizeY == 0) ||
+                     (x % m_CellSizeX == 0) ||
+                     (x == min_y || x == max_x - 1))
+                         m_Scene->RenderAt('#', x + offset_x, y + offset_y);
+                /*
                 if (y == min_y || y == max_y - 1)
                     m_Scene->RenderAt('#', x + offset_x, y + offset_y);
                 else if (y % m_CellSizeY == 0)
@@ -52,7 +58,7 @@ namespace trc::game {
                 else if (x % m_CellSizeX == 0)
                     m_Scene->RenderAt('#', x + offset_x, y + offset_y);
                 else if (x == min_y || x == max_x - 1)
-                    m_Scene->RenderAt('#', x + offset_x, y + offset_y);
+                    m_Scene->RenderAt('#', x + offset_x, y + offset_y);*/
             }
         }
 
