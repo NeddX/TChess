@@ -11,12 +11,12 @@ if [ ! -d "builds" ]; then
 	mkdir -p "builds"
 	mkdir -p "builds/linux"
 	cd "builds/linux"
-	cmake ../../
+	cmake -DCMAKE_BUILD_TYPE=Debug ../../
 elif [ ! -d "builds/linux" ]; then
 	echo "Configuring CMake.."
     mkdir -p "builds/linux"
 	cd "builds/linux"
-	cmake ../../
+	cmake -DCMAKE_BUILD_TYPE=Debug ../../
 else
 	cd "builds/linux"
 fi
