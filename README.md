@@ -25,3 +25,17 @@ If for some reason your Linux distribution doesn't already come with NCurses ins
 - Fedora: ```sudo dnf install ncurses```
 - Apple with Homebrew: ```brew install ncurses```
 - You get the gist. Google also helps.
+
+You can manually configure CMake and build the project or
+you can use the handy scripts I have provided:
+- ```build.sh``` for Debug build.
+- ```build_release.h``` for Release build.
+Make sure to give it Executable permissions before executing by doing
+```chmod +x build.sh``` afterwhich simply execute the script by typing ```./build.sh```.
+Make sure you're in the project root directory.
+
+To configure and build manually do the following:
+- ```mkdir your-build-folder``` To create your build folder.
+- ```cd your-build-folder``` To enter your build folder.
+- ```cmake ../ -DCMAKE_DEBUG=1``` To generate cmake debug build files. or ```cmake ../ -DCMAKE_RELEASE=1``` for release mode.
+- ```cmake --build ./``` To build the project.
