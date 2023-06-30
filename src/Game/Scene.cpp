@@ -8,7 +8,7 @@ namespace trc::game {
         initscr();
         noecho();
         nodelay(stdscr, 1);
-        curs_set(1);
+        //curs_set(1);
 
         m_Buffer.resize(m_Width * m_Height);
         std::memset(m_Buffer.data(), ' ', m_Buffer.size() * sizeof(chtype));

@@ -7,7 +7,9 @@
 
 int main(int argc, const char *argv[])
 {
-	std::cout << "TChess\n";
-	trc::game::Game g;
-	g.Start();
+	while (1)
+	{
+		trc::game::Game g;
+		g.Start();
+	}
 }

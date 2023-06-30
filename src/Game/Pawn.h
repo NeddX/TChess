@@ -5,15 +5,8 @@
 #include <sdafx.h>
 
 namespace trc::game {
-    enum class PawnType : uint16_t
-    {
-    	Pawn	= 0x0001,
-        Knight	= 0x0002,
-        Bishop	= 0x0004,
-        Rook	= 0x0008,
-        King	= 0x0010,
-        Queen	= 0x0020
-	};
+    // Forward declerations
+    class Board;
 
     class Pawn
     {
@@ -23,12 +16,14 @@ namespace trc::game {
         int m_MoveCount = 0;
         chtype m_Symbol = 'P';
         chtype m_Colour = 'W';
+        const Board* const m_CurrentBoard;
 
     public:
-        Pawn(int x, int y, chtype colour);
+        Pawn(int x, int y, chtype colour, const Board* owner);
+        virtual ~Pawn() = default;
 
     protected:
-        Pawn(int x, int y, chtype colour, chtype symbol);
+        Pawn(int x, int y, chtype colour, chtype symbol, const Board* owner);
 
     public:
         inline std::pair<int, int> GetPos() const { return { m_PosX, m_PosY }; }
@@ -40,54 +35,61 @@ namespace trc::game {
         inline void SetPos(std::pair<int, int> newPos) { m_PosX = newPos.first; m_PosY = newPos.second; }
 
     public:
-        virtual bool IsInRange(std::pair<int, int> pos, bool eatable = false);
+        virtual bool CanProceed(std::pair<int, int> pos, bool eatable = false) const;
+        virtual std::vector<std::pair<int, int>> GetMaxRangesFromCurrentPos() const;
     };
 
-    // Should've used a more data oriented approach instead of this inheritance fiesta
-    // but I'm lazy so whatever.
+    // Should've used a more data oriented approach here
+    // instead of this inheritance fiesta we got here,
+    // but unfortunately, I'm lazy.
     class Knight : public Pawn
     {
     public:
-        Knight(int x, int y, chtype colour) : Pawn(x, y, colour, 'N') { };
+        Knight(int x, int y, chtype colour, const Board* owner) : Pawn(x, y, colour, 'N', owner) { };
 
     public:
-        bool IsInRange(std::pair<int, int> pos, bool eatable = false) override;
+        bool CanProceed(std::pair<int, int> pos, bool eatable = false) const override;
+        std::vector<std::pair<int, int>> GetMaxRangesFromCurrentPos() const override;
     };
 
     class Bishop : public Pawn
     {
     public:
-        Bishop(int x, int y, chtype colour) : Pawn(x, y, colour, 'B') { };
+        Bishop(int x, int y, chtype colour, const Board* owner) : Pawn(x, y, colour, 'B', owner) { };
 
     public:
-        bool IsInRange(std::pair<int, int> pos, bool eatable = false) override;
+        bool CanProceed(std::pair<int, int> pos, bool eatable = false) const override;
+        std::vector<std::pair<int, int>> GetMaxRangesFromCurrentPos() const override;
     };
 
     class Rook : public Pawn
     {
     public:
-        Rook(int x, int y, chtype colour) : Pawn(x, y, colour, 'R') { };
+        Rook(int x, int y, chtype colour, const Board* owner) : Pawn(x, y, colour, 'R', owner) { };
 
     public:
-        bool IsInRange(std::pair<int, int> pos, bool eatable = false) override;
+        bool CanProceed(std::pair<int, int> pos, bool eatable = false) const override;
+        std::vector<std::pair<int, int>> GetMaxRangesFromCurrentPos() const override;
     };
 
     class King : public Pawn
     {
     public:
-        King(int x, int y, chtype colour) : Pawn(x, y, colour, 'K') { }
+        King(int x, int y, chtype colour, const Board* owner) : Pawn(x, y, colour, 'K', owner) { }
 
     public:
-        bool IsInRange(std::pair<int, int> pos, bool eatable = false) override;
+        bool CanProceed(std::pair<int, int> pos, bool eatable = false) const override;
+        std::vector<std::pair<int, int>> GetMaxRangesFromCurrentPos() const override;
     };
 
     class Queen : public Pawn
     {
     public:
-        Queen(int x, int y, chtype colour) : Pawn(x, y, colour, 'Q') { }
+        Queen(int x, int y, chtype colour, const Board* owner) : Pawn(x, y, colour, 'Q', owner) { }
 
     public:
-        bool IsInRange(std::pair<int, int> pos, bool eatable = false) override;
+        bool CanProceed(std::pair<int, int> pos, bool eatable = false) const override;
+        std::vector<std::pair<int, int>> GetMaxRangesFromCurrentPos() const override;
     };
 } // namespace trc::game
 

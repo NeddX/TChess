@@ -1,9 +1,10 @@
 #include "Game.h"
 #include "Pawn.h"
 #include "../Utils/xstdf.h"
-#include <chrono>
 
-#define KEY_ESCAPE 27
+#define ASCII_ESCAPE 27
+#define ASCII_BACKSPACE 8
+#define ASCII_DELETE 127
 
 #define printca(str, ...) clear(); mvprintw(m_MaxRows - 1, 0, str, __VA_ARGS__)
 #define printc(str) clear(); mvprintw(m_MaxRows - 1, 0, str)
@@ -11,7 +12,15 @@
 namespace trc::game {
     Game::Game()
     {
-        m_Board = std::make_unique<Board>(8, 8, 4, 4);
+        m_Board = std::make_unique<Board>(8, 8, 4, 4,
+                                          [&](Pawn& eatingPawn, Pawn& targetPawn)
+                                          {
+                                              switch (eatingPawn.GetColour())
+                                              {
+                                                  case 'B': m_PawnsEatenByB++; break;
+                                                  case 'W': m_PawnsEatenByW++; break;
+                                              }
+                                          });
         m_Running = true;
 
         curs_set(0); // No Cursor for now.
@@ -25,8 +34,8 @@ namespace trc::game {
 
     void Game::Start()
     {
-        m_Turn = 'B'; // FIXME: REMEMBER TO REMOVE!
-        m_Board->AddPawn<King>(3, 0, 'B');
+        clear();
+        refresh();
 
         // Pawns
         for (int y = 0; y <= 1; ++y)
@@ -46,23 +55,64 @@ namespace trc::game {
             }
         }
 
+        // Knights
         for (int y = 0; y <= 1; ++y)
         {
-            for (int x = 0; x <= 1 ; ++x)
+            for (int x = 0; x <= 1; ++x)
             {
-                m_Board->AddPawn<Knight>();
+                m_Board->AddPawn<Knight>(x * 5 + 1, y * 7, (y == 0) ? 'B' : 'W');
             }
         }
 
+        // Bishops
+        for (int y = 0; y <= 1; ++y)
+        {
+            for (int x = 0; x <= 1; ++x)
+            {
+                m_Board->AddPawn<Bishop>(x * 3 + 2, y * 7, (y == 0) ? 'B' : 'W');
+            }
+        }
+
+        // Queens
+        for (int y = 0; y <= 1; ++y)
+        {
+            m_Board->AddPawn<Queen>(3, y * 7, (y == 0) ? 'B' : 'W');
+        }
+
+        // Kings
+        for (int y = 0; y <= 1; ++y)
+        {
+            m_Board->AddPawn<King>(4, y * 7, (y == 0) ? 'B' : 'W');
+        }
 
         char c = 0;
         int x = 1, y = 1;
         float delta_time = -1.0f;
         while (m_Running)
         {
-            HandleUI();
-            HandleInput();
-            m_Board->Update();
+            if (!m_GameOver)
+            {
+                HandleUI();
+                HandleInput();
+                m_Board->Update();
+                //CheckForCheckmate();
+            }
+            else
+            {
+                HandleUI();
+                m_Board->Update();
+                m_Running = false;
+
+                char c = getchar();
+                switch (c)
+                {
+                    case 'q':
+                        endwin();
+                        std::exit(EXIT_SUCCESS);
+                    case 'r':
+                        return;
+                }
+            }
 
             //std::printf("\033]0;TermChess FPS: %d Delta: %f Frames: %d\007", m_Fps, delta_time, m_FrameCount);
             m_Tp1 = std::chrono::system_clock::now();
@@ -115,6 +165,9 @@ namespace trc::game {
                 }
                 break;
             }
+            case 'o': // FIXME: REMEMBER TO REMOVE!
+                m_GameOver = true;
+                break;
             case 'h':
             {
                 if (m_CommandMode && m_Command == CommandType::NullCmd)
@@ -135,7 +188,7 @@ namespace trc::game {
                 }
                 break;
             }
-            case KEY_ESCAPE:
+            case ASCII_ESCAPE:
             {
                 if (m_CommandMode)
                 {
@@ -147,7 +200,8 @@ namespace trc::game {
                 }
                 break;
             }
-            case 127: // Backspace, on OSX at least.
+            case ASCII_DELETE:
+            case ASCII_BACKSPACE:
             {
                 if (m_CommandMode)
                 {
@@ -188,12 +242,38 @@ default_case:
 
     void Game::HandleUI()
     {
-        mvprintw(
-            m_Board->GetDimensions().second,
-            0,
-            "%s\nSeconds passed: %f\tPawns eaten by Black: \tPawns eaten by White: \n",
-            m_Secs,
-            (m_Turn == 'b') ? "Black's turn." : "White's turn.");
+        if (!m_GameOver)
+        {
+            mvprintw(
+                m_Board->GetDimensions().second + 3,
+                3 * 2,
+                "%s",
+                (m_Turn == 'B') ? "Black's turn." : "White's turn."
+            );
+            mvprintw(
+                m_Board->GetDimensions().second + 3 + 1,
+                3 * 2,
+                "Pawns eaten by White: %d\tPawns eaten by Black: %d\n",
+                m_PawnsEatenByW,
+                m_PawnsEatenByB
+            );
+        }
+        else
+        {
+            clear();
+            mvprintw(
+                m_Board->GetDimensions().second + 3,
+                3 * 2,
+                "Game over. %s won.",
+                (m_Turn == 'W') ? "White" : "Black"
+            );
+            mvprintw(
+                m_Board->GetDimensions().second + 3 + 1,
+                3 * 2,
+                "Press 'r' to restart or 'q' to quit."
+            );
+            refresh();
+        }
     }
 
     void Game::ExecuteCommand(std::string cmd)
@@ -228,14 +308,22 @@ default_case:
                     Pawn* target_pawn = m_Board->GetPawnAt({ npos_x, npos_y });
                     if (pawn && m_Turn == pawn->GetColour())
                     {
-                        if (m_Board->MovePawn(*pawn, { npos_x, npos_y }))
+                        if (m_IsWUnderChess || m_IsBUnderChess &&
+                            pawn->GetSymbol() != 'K')
                         {
-                            // FIXME: holy shit i keep fucking forgeting that the turn changes
-                            //m_Turn = (m_Turn == 'W') ? 'B' : 'W';
+                            printc("Your king is under threat, protect your king: Illegal movement attempt.");
                         }
                         else
                         {
-                            printc("Illegal movement attempt.");
+                            if (m_Board->MovePawn(*pawn, { npos_x, npos_y }))
+                            {
+                                m_Turn = (m_Turn == 'W') ? 'B' : 'W';
+                                CheckForCheckmate();
+                            }
+                            else
+                            {
+                                printc("Illegal movement attempt.");
+                            }
                         }
                     }
                     else
@@ -255,6 +343,65 @@ default_case:
                 printc("Invalid command.");
                 break;
             }
+        }
+    }
+
+    void Game::CheckForCheckmate()
+    {
+        std::vector<const Pawn*> pawns = m_Board->GetAllPawns();
+        auto& current_king = *(King*)(*std::find_if(pawns.begin(), pawns.end(),
+                                           [&](const auto* ptr)
+                                           {
+                                               return ptr->GetColour() == m_Turn &&
+                                                   ptr->GetSymbol() == 'K';
+                                           }));
+
+        auto kings_range = current_king.GetMaxRangesFromCurrentPos();
+
+        for (const auto* p : pawns)
+        {
+            if (p->GetColour() != m_Turn)
+            {
+                for (const auto& krange : kings_range)
+                {
+                    for (const auto& erange : p->GetMaxRangesFromCurrentPos())
+                    {
+                        if (erange.first == krange.first &&
+                            erange.second == krange.second)
+                        {
+                            switch (m_Turn)
+                            {
+                                case 'W': m_IsWUnderChess = true; break;
+                                case 'B': m_IsBUnderChess = true; break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        auto colliding_ranges_it = std::remove_if(kings_range.begin(), kings_range.end(),
+                       [&](const auto& range)
+                       {
+                           for (const auto* ptr : pawns)
+                           {
+                               for (const auto& prange : ptr->GetMaxRangesFromCurrentPos())
+                               {
+                                   if (prange.first == range.first &&
+                                       prange.second == range.second)
+                                       return true;
+                               }
+                           }
+                           return false;
+                       });
+
+        if (colliding_ranges_it != kings_range.end())
+            kings_range.erase(colliding_ranges_it);
+
+        if (kings_range.empty() && (m_IsWUnderChess || m_IsBUnderChess))
+        {
+            m_Turn = (m_Turn == 'W') ? 'B' : 'W';
+            m_GameOver = true;
         }
     }
 } // namespace trc::game
