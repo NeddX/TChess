@@ -9,13 +9,15 @@ for the Move command, after which type in the pawn's coordinates that you want t
 followed by a space, and then the new coordinates for the pawn.
 E.g., ```f2 f4``` moves the White Pawn from F2 to F4.
 After making a move, the turn changes.
-Note that you can only select and move pawns that belong to your color.
+Note that you can only select and move pawns that belong to your colour.
 
 You can also do ```:h``` for list of available commands although they're not many.
 
 # Build Instructions
 Requires CMake 3.20 or higher.
+
 Requires Clang 12.0 or higher.
+
 Requires NCurses 3.6 or higher (though older versions might work, haven't tested).
 
 Since the project requires NCurses, this project won't compile and work on non POSIX compatible systems.
@@ -37,5 +39,5 @@ Make sure you're in the project root directory.
 To configure and build manually do the following:
 - ```mkdir your-build-folder``` To create your build folder.
 - ```cd your-build-folder``` To enter your build folder.
-- ```cmake ../``` To generate cmake debug build files. or ```cmake ../ -DCMAKE_BUILD_TYPE=Release``` for release mode.
+- ```cmake ../``` To generate cmake debug build files. or ```cmake ../ -DCMAKE_BUILD_TYPE=Release``` for release build.
 - ```cmake --build ./``` To build the project.
