@@ -37,5 +37,5 @@ Make sure you're in the project root directory.
 To configure and build manually do the following:
 - ```mkdir your-build-folder``` To create your build folder.
 - ```cd your-build-folder``` To enter your build folder.
-- ```cmake ../ -DCMAKE_DEBUG=1``` To generate cmake debug build files. or ```cmake ../ -DCMAKE_RELEASE=1``` for release mode.
+- ```cmake ../``` To generate cmake debug build files. or ```cmake ../ -DCMAKE_BUILD_TYPE=Release``` for release mode.
 - ```cmake --build ./``` To build the project.
