@@ -224,7 +224,6 @@ namespace trc::game {
 default_case:
                 if (m_CommandMode)
                 {
-                    m_CursorPos = { m_MaxRows - 1, cmd.size() };
                     cmd.append(1, (char)c);
                     printca("%s %s", cmd_prefix.c_str(), cmd.c_str());
                 }
