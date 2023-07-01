@@ -30,7 +30,7 @@ You can manually configure CMake and build the project or
 you can use the handy scripts I have provided:
 - ```build.sh``` for Debug build.
 - ```build_release.h``` for Release build.
-Make sure to give it Executable permissions before executing by doing
+Make sure to give it Executable permission before executing by doing
 ```chmod +x build.sh``` afterwhich simply execute the script by typing ```./build.sh```.
 Make sure you're in the project root directory.
 
